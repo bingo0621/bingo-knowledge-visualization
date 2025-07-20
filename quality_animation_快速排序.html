@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动态动画：快速排序 (Dynamic Animation: Quick Sort)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        :root {
+            --bg-color: #f4f7fc;
+            --main-text-color: #333;
+            --sub-text-color: #6a737d;
+            --container-bg: #ffffff;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --border-color: #e1e4e8;
+            
+            --bar-color: #a2d2ff;
+            --bar-border: #8abef2;
+
+            --pivot-color: #ffafcc;
+            --pivot-border: #f08ab6;
+
+            --compare-color: #bde0fe;
+            --compare-border: #a2d2ff;
+
+            --smaller-color: #cdb4db;
+            --smaller-border: #b99dca;
+
+            --sorted-color: #caffbf;
+            --sorted-border: #a0e890;
+            
+            --accent-color: #007bff;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-color);
+            font-family: 'Poppins', sans-serif;
+            color: var(--main-text-color);
+            overflow: hidden;
+        }
+
+        #animation-wrapper {
+            width: 100vw;
+            height: 56.25vw; /* 16:9 aspect ratio */
+            max-width: 2560px;
+            max-height: 1440px;
+            min-width: 1024px;
+            min-height: 576px;
+            position: relative;
+        }
+
+        #animation-container {
+            width: 2560px;
+            height: 1440px;
+            background-color: var(--container-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: top left;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 80px;
+            box-sizing: border-box;
+        }
+
+        .title-container {
+            text-align: center;
+            opacity: 0;
+            transform: translateY(-30px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+        .title-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .main-title {
+            font-size: 80px;
+            font-weight: 600;
+            margin: 0;
+        }
+        .sub-title {
+            font-size: 32px;
+            font-weight: 300;
+            color: var(--sub-text-color);
+            margin-top: 10px;
+        }
+        
+        #array-area {
+            position: relative;
+            width: 2200px;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .array-container {
+            position: relative;
+            height: 250px;
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+            transition: transform 0.8s ease-in-out;
+        }
+
+        .bar-wrapper {
+            position: relative;
+            width: 120px;
+            height: 250px; /* Max height */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            transition: transform 0.8s ease-in-out;
+        }
+
+        .bar {
+            width: 100%;
+            background-color: var(--bar-color);
+            border: 3px solid var(--bar-border);
+            border-bottom: none;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 600;
+            color: var(--main-text-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: background-color 0.5s ease, border-color 0.5s ease, height 0.5s ease;
+        }
+        
+        .bar-index {
+            position: absolute;
+            bottom: -50px;
+            font-size: 28px;
+            color: var(--sub-text-color);
+        }
+
+        /* Bar States */
+        .pivot {
+            background-color: var(--pivot-color) !important;
+            border-color: var(--pivot-border) !important;
+        }
+        .comparing {
+            background-color: var(--compare-color) !important;
+            border-color: var(--compare-border) !important;
+        }
+        .smaller {
+            background-color: var(--smaller-color) !important;
+            border-color: var(--smaller-border) !important;
+        }
+        .sorted {
+            background-color: var(--sorted-color) !important;
+            border-color: var(--sorted-border) !important;
+        }
+
+        /* Pointers */
+        .pointer {
+            position: absolute;
+            width: 80px;
+            height: 120px;
+            opacity: 0;
+            transition: transform 0.8s ease-in-out, opacity 0.5s ease;
+            transform-origin: bottom center;
+        }
+        .pointer svg {
+            width: 100%;
+            height: 100%;
+        }
+        .pointer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            font-weight: 600;
+            color: white;
+        }
+        #pointer-i { top: -140px; }
+        #pointer-j { top: 250px; }
+        #pointer-pivot { top: -140px; }
+
+        /* Subtitle Box */
+        .subtitle-box {
+            width: 1800px;
+            min-height: 200px;
+            background-color: #fff;
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            padding: 40px;
+            box-sizing: border-box;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .subtitle-box.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .subtitle-cn {
+            font-size: 36px;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+        }
+        .subtitle-en {
+            font-size: 28px;
+            color: var(--sub-text-color);
+            margin: 0;
+        }
+
+        .partition-overlay {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            background-color: rgba(106, 115, 125, 0.4);
+            transition: all 0.8s ease-in-out;
+            border-radius: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="animation-wrapper">
+    <div id="animation-container">
+        <!-- Title -->
+        <div id="title-area" class="title-container">
+            <h1 class="main-title">快速排序 (Quick Sort)</h1>
+            <p class="sub-title">一种高效的分治排序算法 (An efficient, divide-and-conquer sorting algorithm)</p>
+        </div>
+
+        <!-- Array Visualization -->
+        <div id="array-area">
+            <div id="partition-overlay-left" class="partition-overlay"></div>
+            <div id="partition-overlay-right" class="partition-overlay"></div>
+            <div id="array-container" class="array-container">
+                <!-- Bars will be generated by JS -->
+            </div>
+            
+            <!-- Pointers -->
+            <div id="pointer-i" class="pointer">
+                <svg viewBox="0 0 100 150"><polygon points="50,150 0,75 25,75 25,0 75,0 75,75 100,75" style="fill:#3a86ff;stroke:#0055d4;stroke-width:3"/></svg>
+                <span class="pointer-text">i</span>
+            </div>
+            <div id="pointer-j" class="pointer">
+                <svg viewBox="0 0 100 150"><polygon points="50,0 100,75 75,75 75,150 25,150 25,75 0,75" style="fill:#fb5607;stroke:#c13e00;stroke-width:3"/></svg>
+                <span class="pointer-text">j</span>
+            </div>
+            <div id="pointer-pivot" class="pointer">
+                <svg viewBox="0 0 100 150"><polygon points="50,150 0,75 25,75 25,0 75,0 75,75 100,75" style="fill:#8338ec;stroke:#692eb8;stroke-width:3"/></svg>
+                <span class="pointer-text">P</span>
+            </div>
+        </div>
+
+        <!-- Subtitles -->
+        <div id="subtitle-box" class="subtitle-box">
+            <p id="subtitle-cn" class="subtitle-cn"></p>
+            <p id="subtitle-en" class="subtitle-en"></p>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- UTILITIES ---
+    const get = (id) => document.getElementById(id);
+    const sleep = (ms) => new Promise(res => setTimeout(res, ms));
+    const scaleToFit = () => {
+        const wrapper = get('animation-wrapper');
+        const container = get('animation-container');
+        const scale = Math.min(wrapper.clientWidth / 2560, wrapper.clientHeight / 1440);
+        container.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    };
+    window.addEventListener('resize', scaleToFit);
+    scaleToFit();
+
+    // --- DOM ELEMENTS ---
+    const titleArea = get('title-area');
+    const subtitleBox = get('subtitle-box');
+    const subtitleCN = get('subtitle-cn');
+    const subtitleEN = get('subtitle-en');
+    const arrayContainer = get('array-container');
+    const pointerI = get('pointer-i');
+    const pointerJ = get('pointer-j');
+    const pointerPivot = get('pointer-pivot');
+    
+    // --- CONFIGURATION ---
+    const ANIMATION_SPEED = 1200;
+    const INITIAL_ARRAY = [65, 33, 89, 21, 55, 92, 48, 77, 39];
+    const BAR_WIDTH = 120;
+    const BAR_GAP = 20;
+    const MAX_BAR_HEIGHT = 200;
+    const BASE_BAR_HEIGHT = 50;
+
+    let elements = []; // Holds DOM elements and their data
+
+    // --- ANIMATION & LOGIC FUNCTIONS ---
+
+    function createArrayElements() {
+        arrayContainer.innerHTML = '';
+        elements = [];
+        const maxValue = Math.max(...INITIAL_ARRAY);
+        
+        INITIAL_ARRAY.forEach((value, index) => {
+            const height = BASE_BAR_HEIGHT + (MAX_BAR_HEIGHT * (value / maxValue));
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = 'bar-wrapper';
+            wrapper.style.transform = 'translateY(400px)'; // Start off-screen
+            
+            const bar = document.createElement('div');
+            bar.className = 'bar';
+            bar.style.height = `${height}px`;
+            bar.textContent = value;
+            
+            const barIndex = document.createElement('div');
+            barIndex.className = 'bar-index';
+            barIndex.textContent = index;
+
+            wrapper.appendChild(bar);
+            wrapper.appendChild(barIndex);
+            arrayContainer.appendChild(wrapper);
+
+            elements.push({ wrapper, bar, value, originalIndex: index });
+        });
+    }
+
+    async function updateSubtitles(cn, en) {
+        subtitleBox.classList.remove('visible');
+        await sleep(ANIMATION_SPEED / 2);
+        subtitleCN.textContent = cn;
+        subtitleEN.textContent = en;
+        subtitleBox.classList.add('visible');
+    }
+
+    function getElementX(index) {
+        const containerWidth = elements.length * BAR_WIDTH + (elements.length - 1) * BAR_GAP;
+        const startOffset = (arrayContainer.clientWidth - containerWidth) / 2;
+        return startOffset + index * (BAR_WIDTH + BAR_GAP) + BAR_WIDTH / 2;
+    }
+
+    async function movePointer(pointer, index) {
+        const pointerEl = get(pointer);
+        if (index === null) {
+            pointerEl.style.opacity = '0';
+        } else {
+            const x = getElementX(index) - (pointerEl.clientWidth / 2);
+            pointerEl.style.transform = `translateX(${x}px)`;
+            pointerEl.style.opacity = '1';
+        }
+        await sleep(ANIMATION_SPEED / 2);
+    }
+    
+    async function swapElements(index1, index2) {
+        if (index1 === index2) return;
+
+        const el1 = elements[index1];
+        const el2 = elements[index2];
+
+        const x1 = getElementX(el1.originalIndex) - (BAR_WIDTH / 2);
+        const x2 = getElementX(el2.originalIndex) - (BAR_WIDTH / 2);
+        
+        const yOffset = 'translateY(-150px)';
+        const yReset = 'translateY(0)';
+
+        // Animate movement
+        el1.wrapper.style.transform = `translateX(${x2 - x1}px) ${yOffset}`;
+        el2.wrapper.style.transform = `translateX(${x1 - x2}px) ${yOffset}`;
+        
+        await sleep(ANIMATION_SPEED);
+        
+        el1.wrapper.style.transition = 'none';
+        el2.wrapper.style.transition = 'none';
+
+        el1.wrapper.style.transform = yReset;
+        el2.wrapper.style.transform = yReset;
+
+        // Swap in DOM
+        const parent = el1.wrapper.parentNode;
+        const sibling1 = el1.wrapper.nextSibling === el2.wrapper ? el1.wrapper : el1.wrapper.nextSibling;
+        parent.insertBefore(el1.wrapper, el2.wrapper);
+        parent.insertBefore(el2.wrapper, sibling1);
+
+        // Swap in elements array
+        [elements[index1], elements[index2]] = [elements[index2], elements[index1]];
+
+        // Restore transitions
+        await sleep(50); // a short delay to ensure styles are applied
+        el1.wrapper.style.transition = 'transform 0.8s ease-in-out';
+        el2.wrapper.style.transition = 'transform 0.8s ease-in-out';
+    }
+
+    function highlight(index, className, remove = false) {
+        if (index < 0 || index >= elements.length) return;
+        const bar = elements[index].bar;
+        if (remove) {
+            bar.classList.remove(className);
+        } else {
+            bar.classList.add(className);
+        }
+    }
+    
+    function setPartitionOverlay(low, high) {
+        const overlayLeft = get('partition-overlay-left');
+        const overlayRight = get('partition-overlay-right');
+
+        const firstX = getElementX(0) - (BAR_WIDTH / 2) - (BAR_GAP / 2);
+        const startX = getElementX(low) - (BAR_WIDTH / 2) - (BAR_GAP / 2);
+        const endX = getElementX(high) + (BAR_WIDTH / 2) + (BAR_GAP / 2);
+        const lastX = getElementX(elements.length - 1) + (BAR_WIDTH / 2) + (BAR_GAP / 2);
+        
+        overlayLeft.style.left = `${firstX}px`;
+        overlayLeft.style.width = `${startX - firstX}px`;
+
+        overlayRight.style.left = `${endX}px`;
+        overlayRight.style.width = `${lastX - endX}px`;
+    }
+
+    // --- QUICKSORT ALGORITHM ---
+    
+    async function partition(low, high) {
+        const pivotValue = elements[high].value;
+        await updateSubtitles(
+            `选择范围 [${low}, ${high}] 的最右侧元素 ${pivotValue} 为基准值 (Pivot)。`,
+            `Select the rightmost element ${pivotValue} in range [${low}, ${high}] as the Pivot.`
+        );
+        highlight(high, 'pivot');
+        await movePointer('pointer-pivot', high);
+        await sleep(ANIMATION_SPEED);
+
+        let i = low - 1;
+        await movePointer('pointer-i', i < 0 ? null : i);
+        if (i < 0) {
+            await updateSubtitles(
+                `指针 'i' 初始化在范围左侧。它将标记小于基准值的区域的右边界。`,
+                `Pointer 'i' starts before the range. It will mark the right boundary of elements smaller than the pivot.`
+            );
+            const pointerIEl = get('pointer-i');
+            const x = getElementX(0) - (BAR_WIDTH / 2) - (BAR_GAP) - (pointerIEl.clientWidth / 2);
+            pointerIEl.style.transform = `translateX(${x}px)`;
+            pointerIEl.style.opacity = '1';
+        }
+        await sleep(ANIMATION_SPEED);
+
+        for (let j = low; j < high; j++) {
+            await movePointer('pointer-j', j);
+            await updateSubtitles(
+                `指针 'j' 扫描数组。比较 arr[j] (${elements[j].value}) 与基准值 (${pivotValue})。`,
+                `Pointer 'j' scans the array. Comparing arr[j] (${elements[j].value}) with Pivot (${pivotValue}).`
+            );
+            highlight(j, 'comparing');
+            await sleep(ANIMATION_SPEED);
+
+            if (elements[j].value < pivotValue) {
+                i++;
+                await movePointer('pointer-i', i);
+                await updateSubtitles(
+                    `因为 ${elements[j].value} < ${pivotValue}，'i' 右移一位，并交换 arr[i] 和 arr[j]。`,
+                    `Since ${elements[j].value} < ${pivotValue}, increment 'i' and swap arr[i] with arr[j].`
+                );
+                highlight(i, 'smaller');
+                await sleep(ANIMATION_SPEED);
+                await swapElements(i, j);
+                highlight(i, 'smaller'); // re-apply after swap
+            } else {
+                 await updateSubtitles(
+                    `因为 ${elements[j].value} >= ${pivotValue}，'j' 继续前进。`,
+                    `Since ${elements[j].value} >= ${pivotValue}, 'j' continues.`
+                );
+            }
+            highlight(j, 'comparing', true);
+            await sleep(ANIMATION_SPEED / 2);
+        }
+        
+        await movePointer('pointer-j', null);
+        await updateSubtitles(
+            `分区结束。将基准值与 arr[i+1] 交换，放到它的最终位置。`,
+            `Partitioning is done. Swap the pivot with arr[i+1] to place it in its final sorted position.`
+        );
+        await sleep(ANIMATION_SPEED);
+
+        const pivotFinalIndex = i + 1;
+        await swapElements(pivotFinalIndex, high);
+        
+        highlight(high, 'pivot', true); // Old pivot position
+        highlight(pivotFinalIndex, 'sorted');
+        
+        await movePointer('pointer-i', null);
+        await movePointer('pointer-pivot', null);
+        
+        return pivotFinalIndex;
+    }
+
+    async function quickSort(low, high) {
+        if (low >= high) {
+            if (low >= 0 && low < elements.length) {
+                highlight(low, 'sorted');
+            }
+            return;
+        }
+
+        setPartitionOverlay(low, high);
+        await updateSubtitles(
+            `对子数组 [${low}, ${high}] 进行快速排序。`,
+            `Applying Quick Sort to the subarray from index ${low} to ${high}.`
+        );
+        await sleep(ANIMATION_SPEED);
+
+        const pi = await partition(low, high);
+
+        await updateSubtitles(
+            `基准值已就位。现在递归地对左右两个子数组进行排序。`,
+            `Pivot is in place. Now, recursively sort the left and right subarrays.`
+        );
+        await sleep(ANIMATION_SPEED * 1.5);
+
+        await quickSort(low, pi - 1);
+        await quickSort(pi + 1, high);
+    }
+
+
+    // --- MAIN ANIMATION SEQUENCE ---
+    
+    async function startAnimation() {
+        // 1. Intro
+        await sleep(500);
+        titleArea.classList.add('visible');
+        await updateSubtitles(
+            '你好！让我们一起来学习快速排序。',
+            "Hello! Let's learn Quick Sort together."
+        );
+        await sleep(3000);
+        
+        // 2. Create and show array
+        createArrayElements();
+        titleArea.classList.remove('visible');
+        await updateSubtitles(
+            '首先，我们有一个待排序的无序数组。',
+            'First, we have an unsorted array of numbers.'
+        );
+        await sleep(500);
+        elements.forEach((el, index) => {
+            setTimeout(() => {
+                el.wrapper.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+        await sleep(2000);
+        
+        // 3. Start QuickSort
+        await quickSort(0, elements.length - 1);
+        
+        // 4. Finish
+        setPartitionOverlay(-1, -1); // Hide overlays
+        await sleep(1000);
+        titleArea.classList.add('visible');
+        await updateSubtitles(
+            '排序完成！所有元素都已按升序排列。',
+            'Sorting complete! All elements are now in ascending order.'
+        );
+    }
+
+    startAnimation();
+});
+</script>
+
+</body>
+</html>

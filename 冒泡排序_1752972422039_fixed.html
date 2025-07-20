@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>冒泡排序 | Bubble Sort - Aurora Animation</title>
+    <style>
+        :root {
+            --aurora-red: #E31937;
+            --aurora-black: #000000;
+            --text-light: #F5F5F7;
+            --text-dark: #6E6E73;
+            --bar-default: #2C2C2E;
+            --bar-sorted: #1D1D1F;
+        }
+
+        @font-face {
+            font-family: 'PingFang SC';
+            font-weight: 600;
+            src: local('PingFang SC Semibold');
+        }
+
+        @font-face {
+            font-family: 'SF Pro Display';
+            font-weight: 700;
+            src: local('SF Pro Display Bold');
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--aurora-black);
+            color: var(--text-light);
+            font-family: 'PingFang SC', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .scene {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateZ(-100px) scale(1.1);
+        }
+
+        .scene.active {
+            opacity: 1;
+            transform: translateZ(0) scale(1);
+        }
+
+        /* --- Typography --- */
+        .title-main {
+            text-align: center;
+            transform-style: preserve-3d;
+        }
+
+        .title-cn {
+            font-size: clamp(3.5rem, 10vw, 8rem);
+            font-weight: 600;
+            color: var(--text-light);
+            letter-spacing: 0.1em;
+            margin: 0;
+            transform: translateZ(30px);
+        }
+
+        .title-en {
+            font-size: clamp(1rem, 3vw, 2rem);
+            font-weight: 700;
+            color: var(--aurora-red);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-top: 10px;
+            transform: translateZ(60px);
+        }
+
+        .narration {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+        
+        .narration.visible {
+            opacity: 1;
+        }
+
+        .subtitle-cn {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .subtitle-en {
+            font-size: clamp(0.8rem, 1.5vw, 1.2rem);
+            color: var(--text-dark);
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        /* --- Animation Area --- */
+        .animation-area {
+            width: 100%;
+            height: 50vh;
+            position: absolute;
+            bottom: 10%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        #sort-svg-container {
+            width: 80%;
+            max-width: 1200px;
+            height: 100%;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1.5s ease-out, transform 1.5s ease-out;
+        }
+
+        #sort-svg-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .sort-bar {
+            transition: fill 0.4s ease, transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+            fill: var(--bar-default);
+            transform-origin: bottom center;
+        }
+
+        .sort-bar.comparing {
+            fill: var(--aurora-red);
+        }
+
+        .sort-bar.sorted {
+            fill: var(--text-dark);
+        }
+
+        .bar-label {
+            font-size: clamp(1rem, 2vw, 1.8rem);
+            fill: var(--text-light);
+            font-weight: 700;
+            text-anchor: middle;
+            transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .comparison-symbol {
+            position: absolute;
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            color: var(--aurora-red);
+            font-weight: 700;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            transform: translateY(-50%);
+        }
+
+        .comparison-symbol.visible {
+            opacity: 1;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Scene 1: Title -->
+        <section class="scene" id="scene-1">
+            <div class="title-main">
+                <h1 class="title-cn">冒泡排序</h1>
+                <h2 class="title-en">Bubble Sort</h2>
+            </div>
+        </section>
+
+        <!-- Scene 2: Animation -->
+        <section class="scene" id="scene-2">
+            <div class="narration" id="narration-container">
+                <p class="subtitle-cn" id="subtitle-cn"></p>
+                <p class="subtitle-en" id="subtitle-en"></p>
+            </div>
+            <div class="animation-area">
+                <div id="sort-svg-container"></div>
+                <div id="comparison-symbol" class="comparison-symbol"></div>
+            </div>
+        </section>
+        
+         <!-- Scene 3: End -->
+        <section class="scene" id="scene-3">
+             <div class="title-main">
+                <h1 class="title-cn">排序完成</h1>
+                <h2 class="title-en">Completed</h2>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const scenes = document.querySelectorAll('.scene');
+            const narrationContainer = document.getElementById('narration-container');
+            const subtitleCN = document.getElementById('subtitle-cn');
+            const subtitleEN = document.getElementById('subtitle-en');
+            const svgContainer = document.getElementById('sort-svg-container');
+            const comparisonSymbol = document.getElementById('comparison-symbol');
+
+            let activeScene = 0;
+
+            function showScene(index) {
+                scenes.forEach((scene, i) => {
+                    if (i === index) {
+                        scene.classList.add('active');
+                    } else {
+                        scene.classList.remove('active');
+                    }
+                });
+                activeScene = index;
+            }
+
+            const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+            async function updateNarration(cn, en, duration = 800) {
+                narrationContainer.classList.remove('visible');
+                await sleep(duration / 2);
+                subtitleCN.textContent = cn;
+                subtitleEN.textContent = en;
+                narrationContainer.classList.add('visible');
+                await sleep(duration / 2);
+            }
+
+            // --- Bubble Sort Animation Logic ---
+            const initialArray = [6, 5, 3, 1, 8, 7, 2, 4];
+            const barData = initialArray.map((value, index) => ({
+                id: `bar-${index}`,
+                value: value,
+                originalIndex: index
+            }));
+
+            const SVG_NS = "http://www.w3.org/2000/svg";
+            let svg;
+
+            function createSVG() {
+                svg = document.createElementNS(SVG_NS, "svg");
+                svg.setAttribute('width', '100%');
+                svg.setAttribute('height', '100%');
+                svg.setAttribute('viewBox', `0 0 ${barData.length * 100} 100`);
+                svg.style.overflow = 'visible';
+                svgContainer.appendChild(svg);
+            }
+            
+            function drawBars() {
+                svg.innerHTML = '';
+                const barWidth = 80;
+                const gap = 20;
+                const maxVal = Math.max(...barData.map(d => d.value));
+                
+                barData.forEach((d, i) => {
+                    const barHeight = (d.value / maxVal) * 80 + 15; // Min height of 15
+                    const x = i * (barWidth + gap) + gap/2;
+
+                    const g = document.createElementNS(SVG_NS, 'g');
+                    g.id = d.id;
+                    g.setAttribute('transform', `translate(${x}, 0)`);
+                    
+                    const rect = document.createElementNS(SVG_NS, "rect");
+                    rect.setAttribute('class', 'sort-bar');
+                    rect.setAttribute('x', 0);
+                    rect.setAttribute('y', 100 - barHeight);
+                    rect.setAttribute('width', barWidth);
+                    rect.setAttribute('height', barHeight);
+                    rect.setAttribute('ry', 8);
+
+                    const text = document.createElementNS(SVG_NS, "text");
+                    text.setAttribute('class', 'bar-label');
+                    text.setAttribute('x', barWidth / 2);
+                    text.setAttribute('y', 95);
+                    text.textContent = d.value;
+                    
+                    g.appendChild(rect);
+                    g.appendChild(text);
+                    svg.appendChild(g);
+                });
+            }
+
+            function getElement(index) {
+                const data = barData[index];
+                return document.getElementById(data.id);
+            }
+            
+            async function highlight(indices, className = 'comparing') {
+                indices.forEach(i => {
+                    const g = getElement(i);
+                    if(g) g.querySelector('.sort-bar').classList.add(className);
+                });
+                await sleep(400);
+            }
+
+            async function unhighlight(indices, className = 'comparing') {
+                indices.forEach(i => {
+                    const g = getElement(i);
+                     if(g) g.querySelector('.sort-bar').classList.remove(className);
+                });
+                await sleep(200);
+            }
+
+            async function swap(index1, index2) {
+                const el1 = getElement(index1);
+                const el2 = getElement(index2);
+
+                const transform1 = el1.getAttribute('transform');
+                const transform2 = el2.getAttribute('transform');
+
+                el1.setAttribute('transform', transform2);
+                el2.setAttribute('transform', transform1);
+                
+                // Swap in the data array
+                [barData[index1], barData[index2]] = [barData[index2], barData[index1]];
+
+                await sleep(600); // Wait for transition
+            }
+            
+            function showComparisonSymbol(index1, index2, show) {
+                if (show) {
+                    const el1 = getElement(index1);
+                    const el2 = getElement(index2);
+                    const rect1 = el1.getBoundingClientRect();
+                    const rect2 = el2.getBoundingClientRect();
+                    const containerRect = svgContainer.getBoundingClientRect();
+
+                    const midX = rect1.right + (rect2.left - rect1.right) / 2 - containerRect.left;
+                    const midY = rect1.top + (rect1.height / 2) - containerRect.top;
+
+                    comparisonSymbol.style.left = `${midX}px`;
+                    comparisonSymbol.style.top = `${midY}px`;
+                    comparisonSymbol.textContent = '>';
+                    comparisonSymbol.classList.add('visible');
+                } else {
+                    comparisonSymbol.classList.remove('visible');
+                }
+            }
+
+
+            async function runAnimation() {
+                // --- SCENE 1: Intro ---
+                showScene(0);
+                await sleep(3500);
+
+                // --- SCENE 2: Setup ---
+                showScene(1);
+                await sleep(500);
+                
+                createSVG();
+                drawBars();
+                svgContainer.classList.add('visible');
+                
+                await updateNarration('我们有一个未排序的数组', 'We start with an unsorted array.');
+                await sleep(2500);
+
+                await updateNarration('冒泡排序的核心思想: 相邻元素两两比较', 'The core idea of Bubble Sort: compare adjacent elements.');
+                await sleep(3000);
+
+                // --- Bubble Sort Loop ---
+                let n = barData.length;
+                for (let i = 0; i < n - 1; i++) {
+                     await updateNarration(`第 ${i + 1} 轮比较`, `Round ${i + 1}`);
+                     await sleep(1500);
+
+                    for (let j = 0; j < n - i - 1; j++) {
+                        await highlight([j, j + 1]);
+                        await updateNarration('比较相邻的两个元素', 'Comparing the two adjacent elements.');
+                        await sleep(1000);
+
+                        if (barData[j].value > barData[j + 1].value) {
+                            showComparisonSymbol(j, j+1, true);
+                            await updateNarration('前者 > 后者, 交换它们的位置', 'First > Second, so we swap them.');
+                            await sleep(1500);
+                            showComparisonSymbol(j, j+1, false);
+                            await swap(j, j + 1);
+                        } else {
+                            await updateNarration('前者 ≤ 后者, 无需交换', 'First ≤ Second, no swap needed.');
+                            await sleep(1500);
+                        }
+                        await unhighlight([j, j + 1]);
+                    }
+                    
+                    const sortedIndex = n - 1 - i;
+                    getElement(sortedIndex).querySelector('.sort-bar').classList.add('sorted');
+                    await updateNarration(`第 ${i+1} 轮结束, 最大值 ${barData[sortedIndex].value} 已就位`, `End of round ${i+1}, the largest value ${barData[sortedIndex].value} is in place.`);
+                    await sleep(3000);
+                }
+                
+                // Mark the first element as sorted
+                getElement(0).querySelector('.sort-bar').classList.add('sorted');
+                await updateNarration('所有元素均已排序', 'All elements are now sorted.');
+                await sleep(3000);
+
+                // --- SCENE 3: End ---
+                svgContainer.classList.remove('visible');
+                narrationContainer.classList.remove('visible');
+                await sleep(1000);
+                showScene(2);
+            }
+
+            // Start the show
+            runAnimation();
+
+        });
+    </script>
+
+</body>
+</html>

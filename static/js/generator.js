@@ -296,12 +296,16 @@ class ContentGenerator {
         const contentArea = document.getElementById('contentArea');
         if (!contentArea || !this.accumulatedHTMLCode) return;
         
+        // 先进行代码质量检查
+        const qualityCheck = this.validateHTMLCode(this.accumulatedHTMLCode);
+        
         contentArea.innerHTML = `
             <div class="animation-player">
                 <div class="animation-header flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold text-gray-900">
                         <i class="fas fa-play-circle text-klein mr-2"></i>
                         知识动画已生成
+                        ${qualityCheck.hasErrors ? '<span class="text-warning ml-2"><i class="fas fa-exclamation-triangle"></i></span>' : '<span class="text-success ml-2"><i class="fas fa-check-circle"></i></span>'}
                     </h3>
                     <div class="flex gap-2">
                         <button id="openNewWindow" class="btn btn-secondary btn-sm">
@@ -312,8 +316,20 @@ class ContentGenerator {
                             <i class="fas fa-download mr-1"></i>
                             下载HTML
                         </button>
+                        ${qualityCheck.hasErrors ? '<button id="fixCode" class="btn btn-warning btn-sm"><i class="fas fa-wrench mr-1"></i>修复代码</button>' : ''}
                     </div>
                 </div>
+                ${qualityCheck.hasErrors ? `
+                <div class="quality-warning bg-warning bg-opacity-10 border border-warning rounded-lg p-3 mb-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fas fa-exclamation-triangle text-warning"></i>
+                        <span class="font-medium text-warning">代码质量警告</span>
+                    </div>
+                    <ul class="text-sm text-gray-700 ml-6">
+                        ${qualityCheck.errors.map(error => `<li>• ${error}</li>`).join('')}
+                    </ul>
+                </div>
+                ` : ''}
                 <div class="animation-iframe-container">
                     <iframe id="animationIframe" class="w-full h-96 border border-gray-200 rounded-lg shadow-sm"></iframe>
                 </div>
@@ -341,6 +357,74 @@ class ContentGenerator {
         
         // 绑定按钮事件
         this.bindAnimationPlayerEvents();
+        
+        // 如果有错误，绑定修复按钮
+        if (qualityCheck.hasErrors) {
+            this.bindFixCodeEvent();
+        }
+    }
+
+    /**
+     * 验证HTML代码质量
+     */
+    validateHTMLCode(htmlCode) {
+        const errors = [];
+        
+        // 检查常见的JavaScript错误
+        if (htmlCode.includes('new document.getElementById')) {
+            errors.push('JavaScript语法错误: 不应该在document.getElementById前使用new关键字');
+        }
+        
+        // 检查拼写错误
+        const typoPattern = /[a-zA-Z]+document\.getElementById/g;
+        const matches = htmlCode.match(typoPattern);
+        if (matches) {
+            matches.forEach(match => {
+                if (!match.startsWith('document.getElementById')) {
+                    errors.push(`JavaScript语法错误: ${match} 应该是 document.getElementById`);
+                }
+            });
+        }
+        
+        // 检查基本HTML结构
+        if (!htmlCode.includes('<!DOCTYPE html>')) {
+            errors.push('HTML结构警告: 缺少DOCTYPE声明');
+        }
+        
+        return {
+            hasErrors: errors.length > 0,
+            errors: errors
+        };
+    }
+
+    /**
+     * 自动修复HTML代码
+     */
+    fixHTMLCode() {
+        let fixedCode = this.accumulatedHTMLCode;
+        
+        // 修复 new document.getElementById 错误
+        fixedCode = fixedCode.replace(/new\s+document\.getElementById/g, 'document.getElementById');
+        
+        // 修复拼写错误 (如 aodocument.getElementById)
+        fixedCode = fixedCode.replace(/[a-zA-Z]+document\.getElementById/g, 'document.getElementById');
+        
+        this.accumulatedHTMLCode = fixedCode;
+        
+        // 重新显示修复后的动画
+        this.showHTMLAnimation();
+        
+        this.showToast('代码修复完成', '已自动修复常见的JavaScript语法错误', 'success');
+    }
+
+    /**
+     * 绑定修复代码按钮事件
+     */
+    bindFixCodeEvent() {
+        const fixCodeBtn = document.getElementById('fixCode');
+        if (fixCodeBtn) {
+            fixCodeBtn.addEventListener('click', () => this.fixHTMLCode());
+        }
     }
 
     /**
