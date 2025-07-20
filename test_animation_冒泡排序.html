@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>冒泡排序动画 | Bubble Sort Animation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        :root {
+            --bg-color: #f0f4f8;
+            --primary-text-color: #2c3e50;
+            --secondary-text-color: #7f8c8d;
+            --accent-color: #3498db;
+            --compare-color: #e74c3c;
+            --swap-color: #f1c40f;
+            --sorted-color: #2ecc71;
+            --default-bar-color: #3498db;
+            --container-width: 2560px;
+            --container-height: 1440px;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #animation-container {
+            width: var(--container-width);
+            height: var(--container-height);
+            position: relative;
+            background-color: #ffffff;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transform-origin: top left;
+        }
+
+        /* Background decorative bubbles */
+        .bubbles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bubble {
+            position: absolute;
+            list-style: none;
+            display: block;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 50%;
+            animation: rise 25s infinite linear;
+            bottom: -150px;
+        }
+
+        .bubble:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-duration: 20s; animation-delay: 0s; }
+        .bubble:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-duration: 12s; animation-delay: 2s; }
+        .bubble:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-duration: 29s; animation-delay: 4s; }
+        .bubble:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-duration: 22s; animation-delay: 0s; }
+        .bubble:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-duration: 18s; animation-delay: 3s; }
+        .bubble:nth-child(6) { left: 75%; width: 110px; height: 110px; animation-duration: 23s; animation-delay: 1s; }
+        .bubble:nth-child(7) { left: 35%; width: 150px; height: 150px; animation-duration: 40s; animation-delay: 7s; }
+        .bubble:nth-child(8) { left: 50%; width: 25px; height: 25px; animation-duration: 15s; animation-delay: 15s; }
+        .bubble:nth-child(9) { left: 20%; width: 15px; height: 15px; animation-duration: 35s; animation-delay: 2s; }
+        .bubble:nth-child(10) { left: 85%; width: 150px; height: 150px; animation-duration: 21s; animation-delay: 11s; }
+
+        @keyframes rise {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-1600px) rotate(720deg); opacity: 0; }
+        }
+
+        #title-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 100;
+            background-color: #ffffff;
+        }
+
+        #title-main {
+            font-size: 160px;
+            font-weight: 600;
+            color: var(--primary-text-color);
+            margin: 0;
+        }
+
+        #title-sub {
+            font-size: 80px;
+            font-weight: 300;
+            color: var(--secondary-text-color);
+            margin-top: 20px;
+        }
+
+        #visualization {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+        }
+
+        .bar {
+            transition: fill 0.5s ease;
+        }
+
+        .bar-label {
+            font-size: 60px;
+            font-weight: 600;
+            fill: white;
+            text-anchor: middle;
+            user-select: none;
+            pointer-events: none;
+        }
+        
+        #pointers-container {
+            position: absolute;
+            left: 0;
+            top: 650px; /* Aligned with top of bars */
+            width: 100%;
+            height: 600px; /* Covers bar area */
+            z-index: 20;
+            opacity: 0;
+        }
+        
+        .pointer {
+            position: absolute;
+            width: 200px;
+            height: 520px;
+            border: 8px solid var(--compare-color);
+            border-radius: 20px;
+            transition: left 0.5s ease-in-out;
+            box-sizing: border-box;
+        }
+
+        .pointer::after {
+            content: '▼';
+            position: absolute;
+            top: -120px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 80px;
+            color: var(--compare-color);
+        }
+
+        #pointer-j { top: 0; }
+        #pointer-j1 { top: 0; }
+        
+        #subtitles-container {
+            position: absolute;
+            bottom: 80px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 50;
+            opacity: 0;
+        }
+
+        .subtitle {
+            font-size: 52px;
+            line-height: 1.5;
+            padding: 15px 30px;
+            display: inline-block;
+            background-color: rgba(44, 62, 80, 0.8);
+            color: white;
+            border-radius: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            max-width: 80%;
+            margin: 0 auto;
+        }
+
+        #subtitle-cn {
+            font-weight: 400;
+        }
+
+        #subtitle-en {
+            font-size: 40px;
+            font-weight: 300;
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+
+        #summary-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .summary-card {
+            background-color: white;
+            padding: 100px 150px;
+            border-radius: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        .summary-card h2 {
+            font-size: 90px;
+            color: var(--primary-text-color);
+            margin-top: 0;
+        }
+        
+        .summary-card p {
+            font-size: 50px;
+            color: var(--secondary-text-color);
+            line-height: 1.6;
+            max-width: 1200px;
+        }
+
+        .summary-card .complexity {
+            font-size: 60px;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-top: 60px;
+            padding: 20px 40px;
+            background-color: #eaf4fb;
+            border-radius: 15px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div id="animation-container">
+        <ul class="bubbles">
+            <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
+        </ul>
+
+        <div id="title-screen">
+            <h1 id="title-main">冒泡排序</h1>
+            <h2 id="title-sub">Bubble Sort</h2>
+        </div>
+
+        <svg id="visualization"></svg>
+        
+        <div id="pointers-container">
+            <div id="pointer-j" class="pointer"></div>
+            <div id="pointer-j1" class="pointer"></div>
+        </div>
+
+        <div id="subtitles-container">
+            <p id="subtitle-cn" class="subtitle"></p>
+            <p id="subtitle-en" class="subtitle"></p>
+        </div>
+
+        <div id="summary-screen">
+            <div class="summary-card">
+                <h2>冒泡排序 | Bubble Sort</h2>
+                <p>
+                    它重复地走访过要排序的数列，一次比较两个元素，如果它们的顺序错误就把它们交换过来。
+                    <br>
+                    It repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order.
+                </p>
+                <div class="complexity">时间复杂度 | Time Complexity: O(n²)</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        // --- Setup ---
+        const svg = document.getElementById('visualization');
+        const pointersContainer = document.getElementById('pointers-container');
+        const pointerJ = document.getElementById('pointer-j');
+        const pointerJ1 = document.getElementById('pointer-j1');
+        const subtitleCn = document.getElementById('subtitle-cn');
+        const subtitleEn = aodocument.getElementById('subtitle-en');
+        const subtitlesContainer = document.getElementById('subtitles-container');
+        
+        const data = [
+            { id: 0, value: 65 },
+            { id: 1, value: 34 },
+            { id: 2, value: 89 },
+            { id: 3, value: 21 },
+            { id: 4, value: 55 },
+            { id: 5, value: 43 },
+        ];
+        
+        const N = data.length;
+        const BAR_WIDTH = 200;
+        const BAR_GAP = 80;
+        const SVG_HEIGHT = 1440;
+        const START_X = (2560 - (N * BAR_WIDTH + (N - 1) * BAR_GAP)) / 2;
+        const MAX_BAR_HEIGHT = 450;
+        const MIN_BAR_HEIGHT = 100;
+        const BAR_BASE_Y = 700;
+        
+        const elements = {};
+
+        // --- Responsive Scaling ---
+        function scaleContainer() {
+            const container = document.getElementById('animation-container');
+            const containerWidth = parseFloat(getComputedStyle(container).getPropertyValue('--container-width'));
+            const containerHeight = parseFloat(getComputedStyle(container).getPropertyValue('--container-height'));
+            
+            const scaleX = window.innerWidth / containerWidth;
+            const scaleY = window.innerHeight / containerHeight;
+            const scale = Math.min(scaleX, scaleY);
+            
+            container.style.transform = `scale(${scale})`;
+            container.style.left = `${(window.innerWidth - containerWidth * scale) / 2}px`;
+            container.style.top = `${(window.innerHeight - containerHeight * scale) / 2}px`;
+        }
+
+        window.addEventListener('resize', scaleContainer);
+        // Initial call
+        // Need to wrap in a function because of how getComputedStyle works
+        const initScaling = () => scaleContainer();
+        window.onload = initScaling;
+        
+        // --- Utility Functions ---
+        function createBar(item, index) {
+            const maxValue = Math.max(...data.map(d => d.value));
+            const height = MIN_BAR_HEIGHT + (item.value / maxValue) * (MAX_BAR_HEIGHT - MIN_BAR_HEIGHT);
+            const x = START_X + index * (BAR_WIDTH + BAR_GAP);
+            const y = BAR_BASE_Y - height;
+
+            const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            gsap.set(group, { attr: { 'data-id': item.id, 'id': `group-${item.id}` } });
+
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            gsap.set(rect, {
+                attr: {
+                    id: `bar-${item.id}`,
+                    x: x,
+                    y: y,
+                    width: BAR_WIDTH,
+                    height: height,
+                    rx: 15,
+                    ry: 15
+                },
+                fill: 'var(--default-bar-color)',
+                class: 'bar'
+            });
+
+            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            label.textContent = item.value;
+            gsap.set(label, {
+                attr: {
+                    id: `label-${item.id}`,
+                    x: x + BAR_WIDTH / 2,
+                    y: BAR_BASE_Y - 30,
+                },
+                class: 'bar-label'
+            });
+            
+            group.appendChild(rect);
+            group.appendChild(label);
+            svg.appendChild(group);
+
+            elements[item.id] = { group, rect, label, currentPos: index };
+        }
+
+        function updateSubtitles(cn, en) {
+            subtitleCn.innerHTML = cn;
+            subtitleEn.innerHTML = en;
+        }
+
+        // --- Animation Timeline ---
+        const masterTimeline = gsap.timeline({ paused: true });
+
+        function buildAnimation() {
+            // 1. Intro
+            masterTimeline
+                .to("#title-main", { duration: 0.8, y: -50, opacity: 0, ease: 'power2.in', delay: 1.5 })
+                .to("#title-sub", { duration: 0.8, y: -50, opacity: 0, ease: 'power2.in' }, "-=0.7")
+                .to("#title-screen", { duration: 0.5, opacity: 0, onComplete: () => {
+                    document.getElementById('title-screen').style.pointerEvents = 'none';
+                }})
+                .from(Object.values(elements).map(e => e.group), { duration: 0.8, y: 300, opacity: 0, stagger: 0.1, ease: 'power2.out' })
+                .to(subtitlesContainer, { duration: 0.5, opacity: 1 });
+            
+            masterTimeline.add( () => updateSubtitles(
+                `你好！我们来学习冒泡排序。这是一种简单的排序算法。`,
+                `Hello! Let's learn Bubble Sort. It's a simple sorting algorithm.`
+            ), "+=0.5");
+            
+            masterTimeline.add( () => updateSubtitles(
+                `它的核心思想是：重复地比较相邻的两个元素。`,
+                `Its core idea is to repeatedly compare two adjacent elements.`
+            ), "+=2.5");
+            
+            masterTimeline.add( () => updateSubtitles(
+                `如果顺序错误，就交换它们的位置，就像气泡从水底冒上来一样。`,
+                `If they are in the wrong order, they are swapped, just like bubbles rising from the bottom.`
+            ), "+=2.5");
+            
+            masterTimeline
+                .to(pointersContainer, { duration: 0.5, opacity: 1, delay: 1 });
+            
+            // The Bubble Sort Logic
+            let array = [...data];
+            let positions = array.map((_, i) => i);
+            let swapped;
+
+            for (let i = 0; i < N - 1; i++) {
+                 swapped = false;
+                 
+                 masterTimeline.add(() => updateSubtitles(
+                    `第 ${i + 1} 轮遍历开始。我们将从头开始比较。`,
+                    `Starting Pass ${i + 1}. We will compare from the beginning.`
+                 ), "+=1");
+
+                for (let j = 0; j < N - i - 1; j++) {
+                    const currentId = array[j].id;
+                    const nextId = array[j+1].id;
+                    
+                    const pointerJX = START_X + positions[j] * (BAR_WIDTH + BAR_GAP) - 40;
+                    const pointerJ1X = START_X + positions[j+1] * (BAR_WIDTH + BAR_GAP) - 40;
+
+                    // Move pointers
+                    masterTimeline.to([pointerJ, pointerJ1], { 
+                        duration: 0.5, 
+                        ease: 'power2.inOut',
+                        onStart: () => {
+                            gsap.set(pointerJ, { left: pointerJX });
+                            gsap.set(pointerJ1, { left: pointerJ1X });
+                        }
+                    }, "+=0.5");
+
+                    // Highlight for comparison
+                    masterTimeline.to([`#bar-${currentId}`, `#bar-${nextId}`], { duration: 0.3, fill: 'var(--compare-color)' });
+                    
+                    masterTimeline.add(() => updateSubtitles(
+                        `比较 ${array[j].value} 和 ${array[j+1].value}。`,
+                        `Comparing ${array[j].value} and ${array[j+1].value}.`
+                    ));
+                    
+                    if (array[j].value > array[j+1].value) {
+                        swapped = true;
+                        masterTimeline.add(() => updateSubtitles(
+                            `${array[j].value} > ${array[j+1].value}。需要交换！`,
+                            `${array[j].value} > ${array[j+1].value}. A swap is needed!`
+                        ), "+=1");
+
+                        // Swap animation
+                        const currentX = positions[j] * (BAR_WIDTH + BAR_GAP);
+                        const nextX = positions[j+1] * (BAR_WIDTH + BAR_GAP);
+                        
+                        masterTimeline
+                            .to([`#group-${currentId}`, `#group-${nextId}`], { duration: 0.3, y: `-=${80}`, ease: 'power2.out' })
+                            .to(`#group-${currentId}`, { duration: 0.6, x: `+=${BAR_WIDTH + BAR_GAP}`, ease: 'power2.inOut' }, "<")
+                            .to(`#group-${nextId}`, { duration: 0.6, x: `-=${BAR_WIDTH + BAR_GAP}`, ease: 'power2.inOut' }, "<")
+                            .to([`#group-${currentId}`, `#group-${nextId}`], { duration: 0.3, y: `+=${80}`, ease: 'power2.in' });
+
+                        // Swap in the array for logic
+                        [array[j], array[j+1]] = [array[j+1], array[j]];
+                        [positions[j], positions[j+1]] = [positions[j+1], positions[j]];
+                        
+                         masterTimeline.to([`#bar-${currentId}`, `#bar-${nextId}`], { duration: 0.3, fill: 'var(--default-bar-color)' });
+                    } else {
+                        masterTimeline.add(() => updateSubtitles(
+                            `${array[j].value} <= ${array[j+1].value}。顺序正确，无需交换。`,
+                            `${array[j].value} <= ${array[j+1].value}. Correct order, no swap.`
+                        ), "+=1");
+                        masterTimeline.to([`#bar-${currentId}`, `#bar-${nextId}`], { duration: 0.3, fill: 'var(--default-bar-color)' });
+                    }
+                }
+                
+                const sortedElementId = array[N - 1 - i].id;
+                masterTimeline.add(() => updateSubtitles(
+                    `第 ${i + 1} 轮结束。最大的元素 ${array[N-1-i].value} "冒泡"到了正确位置。`,
+                    `Pass ${i + 1} is complete. The largest element, ${array[N-1-i].value}, has "bubbled" to its correct position.`
+                ));
+                masterTimeline.to(`#bar-${sortedElementId}`, { duration: 0.5, fill: 'var(--sorted-color)' }, "+=0.5");
+                 
+                 if (!swapped) {
+                     masterTimeline.add(() => updateSubtitles(
+                         `在这一轮中没有发生任何交换。这说明数组已经有序了！`,
+                         `No swaps occurred in this pass. This means the array is already sorted!`
+                     ));
+                     break; 
+                 }
+            }
+            
+            // Finalize
+            masterTimeline
+                .to('.bar', { duration: 0.5, fill: 'var(--sorted-color)' }, "+=1")
+                .to(pointersContainer, { duration: 0.5, opacity: 0 })
+                .add(() => updateSubtitles(
+                    `排序完成！这就是冒泡排序的完整过程。`,
+                    `Sorting complete! This is the full process of Bubble Sort.`
+                ), "+=0.5")
+                .to(subtitlesContainer, { duration: 0.5, opacity: 0, delay: 3 })
+                .to("#summary-screen", { duration: 1, opacity: 1, onStart: () => {
+                    document.getElementById('summary-screen').style.pointerEvents = 'auto';
+                }});
+        }
+
+        // --- Start Animation ---
+        document.addEventListener('DOMContentLoaded', () => {
+            data.forEach(createBar);
+            buildAnimation();
+            masterTimeline.play();
+        });
+    </script>
+</body>
+</html>

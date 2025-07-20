@@ -9,6 +9,8 @@ class ContentGenerator {
         this.currentStream = null;
         this.generatedContent = '';
         this.history = [];
+        this.inCodeBlock = false;
+        this.accumulatedHTMLCode = '';
         this.init();
     }
 
@@ -239,6 +241,141 @@ class ContentGenerator {
         this.generatedContent += token;
         this.updateContentDisplay();
         this.updateProgress();
+        
+        // 检测HTML代码块的开始和结束
+        this.detectHTMLCodeBlock(token);
+    }
+
+    /**
+     * 检测HTML代码块
+     */
+    detectHTMLCodeBlock(token) {
+        if (!this.inCodeBlock && token.includes('```')) {
+            this.inCodeBlock = true;
+            this.showCodeGenerationUI();
+            const contentAfterMarker = token.substring(token.indexOf('```') + 3).replace(/^html\n/, '');
+            this.accumulatedHTMLCode = contentAfterMarker;
+        } else if (this.inCodeBlock) {
+            if (token.includes('```')) {
+                this.inCodeBlock = false;
+                const contentBeforeMarker = token.substring(0, token.indexOf('```'));
+                this.accumulatedHTMLCode += contentBeforeMarker;
+                this.showHTMLAnimation();
+            } else {
+                this.accumulatedHTMLCode += token;
+            }
+        }
+    }
+
+    /**
+     * 显示代码生成UI
+     */
+    showCodeGenerationUI() {
+        const contentArea = document.getElementById('contentArea');
+        if (!contentArea) return;
+        
+        contentArea.innerHTML = `
+            <div class="code-generation-status">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="animate-spin">
+                        <i class="fas fa-code text-klein text-xl"></i>
+                    </div>
+                    <span class="text-lg font-medium text-gray-700">正在生成HTML动画代码...</span>
+                </div>
+                <div class="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm max-h-40 overflow-y-auto">
+                    <div id="codePreview"></div>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * 显示HTML动画
+     */
+    showHTMLAnimation() {
+        const contentArea = document.getElementById('contentArea');
+        if (!contentArea || !this.accumulatedHTMLCode) return;
+        
+        contentArea.innerHTML = `
+            <div class="animation-player">
+                <div class="animation-header flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        <i class="fas fa-play-circle text-klein mr-2"></i>
+                        知识动画已生成
+                    </h3>
+                    <div class="flex gap-2">
+                        <button id="openNewWindow" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-external-link-alt mr-1"></i>
+                            新窗口打开
+                        </button>
+                        <button id="downloadHTML" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-download mr-1"></i>
+                            下载HTML
+                        </button>
+                    </div>
+                </div>
+                <div class="animation-iframe-container">
+                    <iframe id="animationIframe" class="w-full h-96 border border-gray-200 rounded-lg shadow-sm"></iframe>
+                </div>
+                <details class="mt-4">
+                    <summary class="cursor-pointer text-sm text-gray-600 hover:text-gray-800">
+                        <i class="fas fa-code mr-1"></i>
+                        查看生成的HTML代码
+                    </summary>
+                    <pre class="bg-gray-900 text-green-400 p-4 rounded-lg mt-2 text-xs overflow-x-auto"><code id="htmlCode"></code></pre>
+                </details>
+            </div>
+        `;
+        
+        // 设置iframe内容
+        const iframe = document.getElementById('animationIframe');
+        if (iframe) {
+            iframe.srcdoc = this.accumulatedHTMLCode;
+        }
+        
+        // 显示代码
+        const htmlCode = document.getElementById('htmlCode');
+        if (htmlCode) {
+            htmlCode.textContent = this.accumulatedHTMLCode;
+        }
+        
+        // 绑定按钮事件
+        this.bindAnimationPlayerEvents();
+    }
+
+    /**
+     * 绑定动画播放器事件
+     */
+    bindAnimationPlayerEvents() {
+        const openNewWindow = document.getElementById('openNewWindow');
+        const downloadHTML = document.getElementById('downloadHTML');
+        
+        if (openNewWindow) {
+            openNewWindow.addEventListener('click', () => {
+                const blob = new Blob([this.accumulatedHTMLCode], { type: 'text/html' });
+                window.open(URL.createObjectURL(blob), '_blank');
+            });
+        }
+        
+        if (downloadHTML) {
+            downloadHTML.addEventListener('click', () => {
+                const topicInput = document.getElementById('topicInput');
+                const topic = topicInput?.value.trim() || 'animation';
+                const filename = `${topic.replace(/[^\w\u4e00-\u9fa5]/g, '_')}_${Date.now()}.html`;
+                
+                const blob = new Blob([this.accumulatedHTMLCode], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                URL.revokeObjectURL(url);
+                a.remove();
+                
+                this.showToast('下载成功', `HTML文件已保存为 ${filename}`, 'success');
+            });
+        }
     }
 
     /**
@@ -262,7 +399,11 @@ class ContentGenerator {
         this.addToHistory();
         
         // 显示成功通知
-        this.showToast('生成完成', '知识可视化内容已生成完成', 'success');
+        if (this.accumulatedHTMLCode) {
+            this.showToast('动画生成完成', '知识可视化动画已生成完成！', 'success');
+        } else {
+            this.showToast('生成完成', '内容已生成完成', 'success');
+        }
     }
 
     /**
