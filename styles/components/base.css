@@ -1,0 +1,406 @@
+/**
+ * BINGO知识之象 - 基础组件样式
+ * 克莱因蓝主题 + 苹果设计风格
+ */
+
+/* ========================================
+   CSS 变量定义 - 克莱因蓝设计系统
+======================================== */
+:root {
+  /* 克莱因蓝配色系统 */
+  --klein-blue: #002FA7;
+  --klein-blue-light: #0051D5;
+  --klein-blue-dark: #001A5C;
+  --klein-blue-alpha-10: rgba(0, 47, 167, 0.1);
+  --klein-blue-alpha-20: rgba(0, 47, 167, 0.2);
+  --klein-blue-alpha-60: rgba(0, 47, 167, 0.6);
+  
+  /* 中性色系 */
+  --white: #FFFFFF;
+  --gray-50: #FAFAFA;
+  --gray-100: #F5F5F7;
+  --gray-200: #E5E5E7;
+  --gray-300: #D2D2D7;
+  --gray-400: #A1A1AA;
+  --gray-500: #86868B;
+  --gray-600: #6D6D70;
+  --gray-700: #515154;
+  --gray-800: #3A3A3C;
+  --gray-900: #1D1D1F;
+  
+  /* 语义色系 */
+  --success: #30D158;
+  --warning: #FF9F0A;
+  --error: #FF453A;
+  --info: var(--klein-blue);
+  
+  /* 字体系统 */
+  --font-family-zh: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-family-en: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  --font-family-mono: "SF Mono", Monaco, "Cascadia Code", monospace;
+  
+  /* 字体大小 */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px */
+  --text-3xl: 1.875rem;  /* 30px */
+  --text-4xl: 2.25rem;   /* 36px */
+  --text-5xl: 3rem;      /* 48px */
+  --text-6xl: 3.75rem;   /* 60px */
+  
+  /* 间距系统 */
+  --space-1: 0.25rem;    /* 4px */
+  --space-2: 0.5rem;     /* 8px */
+  --space-3: 0.75rem;    /* 12px */
+  --space-4: 1rem;       /* 16px */
+  --space-5: 1.25rem;    /* 20px */
+  --space-6: 1.5rem;     /* 24px */
+  --space-8: 2rem;       /* 32px */
+  --space-10: 2.5rem;    /* 40px */
+  --space-12: 3rem;      /* 48px */
+  --space-16: 4rem;      /* 64px */
+  --space-20: 5rem;      /* 80px */
+  --space-24: 6rem;      /* 96px */
+  
+  /* 圆角系统 */
+  --radius-sm: 0.375rem;   /* 6px */
+  --radius-base: 0.5rem;   /* 8px */
+  --radius-md: 0.75rem;    /* 12px */
+  --radius-lg: 1rem;       /* 16px */
+  --radius-xl: 1.5rem;     /* 24px */
+  --radius-full: 9999px;
+  
+  /* 阴影系统 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-klein: 0 10px 30px rgba(0, 47, 167, 0.15);
+  
+  /* 动画系统 */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* ========================================
+   全局重置和基础样式
+======================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family-zh);
+  color: var(--gray-900);
+  background-color: var(--white);
+  overflow-x: hidden;
+}
+
+/* ========================================
+   排版系统
+======================================== */
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-xl); }
+.text-2xl { font-size: var(--text-2xl); }
+.text-3xl { font-size: var(--text-3xl); }
+.text-4xl { font-size: var(--text-4xl); }
+.text-5xl { font-size: var(--text-5xl); }
+.text-6xl { font-size: var(--text-6xl); }
+
+.font-light { font-weight: 300; }
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.font-heavy { font-weight: 800; }
+
+.leading-tight { line-height: 1.25; }
+.leading-snug { line-height: 1.375; }
+.leading-normal { line-height: 1.5; }
+.leading-relaxed { line-height: 1.625; }
+.leading-loose { line-height: 2; }
+
+/* ========================================
+   色彩工具类
+======================================== */
+.text-klein { color: var(--klein-blue); }
+.text-klein-light { color: var(--klein-blue-light); }
+.text-klein-dark { color: var(--klein-blue-dark); }
+.text-white { color: var(--white); }
+.text-gray-400 { color: var(--gray-400); }
+.text-gray-500 { color: var(--gray-500); }
+.text-gray-600 { color: var(--gray-600); }
+.text-gray-700 { color: var(--gray-700); }
+.text-gray-800 { color: var(--gray-800); }
+.text-gray-900 { color: var(--gray-900); }
+
+.bg-klein { background-color: var(--klein-blue); }
+.bg-klein-light { background-color: var(--klein-blue-light); }
+.bg-klein-alpha-10 { background-color: var(--klein-blue-alpha-10); }
+.bg-white { background-color: var(--white); }
+.bg-gray-50 { background-color: var(--gray-50); }
+.bg-gray-100 { background-color: var(--gray-100); }
+
+/* ========================================
+   按钮组件
+======================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--text-base);
+  font-weight: 500;
+  line-height: 1;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  outline: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 主要按钮 */
+.btn-primary {
+  background: var(--klein-blue);
+  color: var(--white);
+  box-shadow: var(--shadow-klein);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--klein-blue-light);
+  transform: translateY(-1px);
+  box-shadow: 0 15px 35px rgba(0, 47, 167, 0.25);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* 次要按钮 */
+.btn-secondary {
+  background: var(--white);
+  color: var(--klein-blue);
+  border: 1px solid var(--klein-blue-alpha-20);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--klein-blue-alpha-10);
+  border-color: var(--klein-blue);
+}
+
+/* 大按钮 */
+.btn-lg {
+  padding: var(--space-4) var(--space-8);
+  font-size: var(--text-lg);
+  border-radius: var(--radius-xl);
+}
+
+/* 小按钮 */
+.btn-sm {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  border-radius: var(--radius-base);
+}
+
+/* ========================================
+   输入框组件
+======================================== */
+.input {
+  width: 100%;
+  padding: var(--space-4);
+  font-size: var(--text-base);
+  font-family: inherit;
+  color: var(--gray-900);
+  background: var(--white);
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--klein-blue);
+  box-shadow: 0 0 0 3px var(--klein-blue-alpha-10);
+}
+
+.input::placeholder {
+  color: var(--gray-400);
+}
+
+/* 文本域 */
+.textarea {
+  resize: vertical;
+  min-height: 120px;
+  font-family: inherit;
+}
+
+/* ========================================
+   卡片组件
+======================================== */
+.card {
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-base);
+  overflow: hidden;
+  transition: all var(--transition-base);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.card-body {
+  padding: var(--space-6);
+}
+
+.card-footer {
+  padding: var(--space-6);
+  border-top: 1px solid var(--gray-200);
+  background: var(--gray-50);
+}
+
+/* ========================================
+   导航组件
+======================================== */
+.nav {
+  display: flex;
+  align-items: center;
+  padding: var(--space-4) 0;
+}
+
+.nav-brand {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--klein-blue);
+  text-decoration: none;
+  margin-right: auto;
+}
+
+.nav-link {
+  color: var(--gray-600);
+  text-decoration: none;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-base);
+  transition: all var(--transition-fast);
+  margin-left: var(--space-2);
+}
+
+.nav-link:hover {
+  color: var(--klein-blue);
+  background: var(--klein-blue-alpha-10);
+}
+
+.nav-link.active {
+  color: var(--klein-blue);
+  background: var(--klein-blue-alpha-10);
+}
+
+/* ========================================
+   工具类
+======================================== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.gap-4 { gap: var(--space-4); }
+.gap-6 { gap: var(--space-6); }
+
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+.min-h-screen { min-height: 100vh; }
+
+.p-4 { padding: var(--space-4); }
+.p-6 { padding: var(--space-6); }
+.py-4 { padding-top: var(--space-4); padding-bottom: var(--space-4); }
+.px-6 { padding-left: var(--space-6); padding-right: var(--space-6); }
+
+.m-4 { margin: var(--space-4); }
+.mt-4 { margin-top: var(--space-4); }
+.mb-6 { margin-bottom: var(--space-6); }
+.ml-2 { margin-left: var(--space-2); }
+
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-xl { border-radius: var(--radius-xl); }
+.rounded-full { border-radius: var(--radius-full); }
+
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-klein { box-shadow: var(--shadow-klein); }
+
+/* ========================================
+   响应式断点
+======================================== */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 var(--space-4);
+  }
+  
+  .btn-lg {
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--text-base);
+  }
+  
+  .text-6xl { font-size: var(--text-4xl); }
+  .text-5xl { font-size: var(--text-3xl); }
+  .text-4xl { font-size: var(--text-2xl); }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 var(--space-3);
+  }
+  
+  .card-body,
+  .card-header,
+  .card-footer {
+    padding: var(--space-4);
+  }
+}

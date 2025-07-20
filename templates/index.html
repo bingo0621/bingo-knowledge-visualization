@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BINGO知识之象 - AI驱动的知识可视化平台</title>
+    
+    <!-- 预连接优化 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- 字体加载 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- 图标库 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 样式文件 -->
+    <link href="/styles/components/base.css" rel="stylesheet">
+    <link href="/styles/components/animations.css" rel="stylesheet">
+    <link href="/static/css/main.css" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/static/images/favicon.png">
+    
+    <!-- Meta信息 -->
+    <meta name="description" content="BINGO知识之象 - 基于AI的知识可视化平台，将抽象概念转换为动态视觉内容">
+    <meta name="keywords" content="AI, 知识可视化, 动画生成, 教育科技, BINGO">
+    <meta name="author" content="BINGO知识之象团队">
+    
+    <!-- 社交媒体Meta -->
+    <meta property="og:title" content="BINGO知识之象 - AI驱动的知识可视化平台">
+    <meta property="og:description" content="将抽象概念转换为高质量的动态视觉内容">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/static/images/og-image.png">
+    
+    <!-- PWA支持 -->
+    <meta name="theme-color" content="#002FA7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+<body>
+    <!-- 主应用容器 -->
+    <div id="app" class="min-h-screen bg-gray-50">
+        
+        <!-- 顶部导航 -->
+        <header class="bg-white shadow-sm sticky top-0 z-50">
+            <nav class="container nav">
+                <!-- Logo和品牌 -->
+                <a href="/" class="nav-brand flex items-center gap-3">
+                    <div class="w-8 h-8 bg-klein rounded-lg flex items-center justify-center">
+                        <i class="fas fa-brain text-white text-lg"></i>
+                    </div>
+                    <span>BINGO知识之象</span>
+                </a>
+                
+                <!-- 导航链接 -->
+                <div class="flex items-center gap-2">
+                    <a href="#home" class="nav-link active">首页</a>
+                    <a href="#styles" class="nav-link">风格展示</a>
+                    <a href="#about" class="nav-link">关于</a>
+                    
+                    <!-- 配置按钮 -->
+                    <button id="configBtn" class="btn btn-secondary btn-sm ml-4">
+                        <i class="fas fa-cog mr-2"></i>
+                        设置
+                    </button>
+                </div>
+            </nav>
+        </header>
+        
+        <!-- 主内容区域 -->
+        <main>
+            
+            <!-- 英雄区域 -->
+            <section id="hero" class="py-24 bg-gradient-to-br from-klein-alpha-10 to-white">
+                <div class="container text-center">
+                    <div class="max-w-4xl mx-auto">
+                        <!-- 主标题 -->
+                        <h1 class="text-6xl font-heavy text-gray-900 mb-6 animate-fade-in">
+                            让知识在
+                            <span class="text-klein relative">
+                                可视化
+                                <div class="absolute -bottom-2 left-0 w-full h-1 bg-klein opacity-30"></div>
+                            </span>
+                            中绽放
+                        </h1>
+                        
+                        <!-- 副标题 -->
+                        <p class="text-xl text-gray-600 mb-8 leading-relaxed animate-fade-in animate-delay-200">
+                            AI驱动的知识可视化平台，将抽象概念转换为<br>
+                            生动的动态视觉内容，让学习变得更加直观有趣
+                        </p>
+                        
+                        <!-- CTA按钮组 -->
+                        <div class="flex justify-center gap-4 mb-12 animate-fade-in animate-delay-300">
+                            <button id="startBtn" class="btn btn-primary btn-lg hover-lift">
+                                <i class="fas fa-magic mr-2"></i>
+                                开始创作
+                            </button>
+                            <button id="viewStylesBtn" class="btn btn-secondary btn-lg hover-lift">
+                                <i class="fas fa-palette mr-2"></i>
+                                风格预览
+                            </button>
+                        </div>
+                        
+                        <!-- 配置状态指示 -->
+                        <div id="configStatus" class="animate-fade-in animate-delay-500">
+                            {% if is_configured %}
+                            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full" style="background: rgba(48, 209, 88, 0.1); color: #30D158;">
+                                <i class="fas fa-check-circle"></i>
+                                <span>已配置 {{ current_provider }} - {{ current_model }}</span>
+                            </div>
+                            {% else %}
+                            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full" style="background: rgba(255, 159, 10, 0.1); color: #FF9F0A;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>请先配置API密钥以开始使用</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 主工作区域 -->
+            <section id="workspace" class="py-16">
+                <div class="container">
+                    <div class="max-w-4xl mx-auto">
+                        
+                        <!-- 输入区域 -->
+                        <div class="card mb-8 animate-slide-up">
+                            <div class="card-header">
+                                <h2 class="text-2xl font-semibold text-gray-900">
+                                    <i class="fas fa-lightbulb text-klein mr-3"></i>
+                                    输入您想要可视化的知识概念
+                                </h2>
+                                <p class="text-gray-600 mt-2">
+                                    支持任何学科的概念、理论、流程或抽象思想
+                                </p>
+                            </div>
+                            <div class="card-body">
+                                <!-- 主题输入 -->
+                                <div class="mb-6">
+                                    <label for="topicInput" class="block text-sm font-medium text-gray-700 mb-2">
+                                        知识主题
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        id="topicInput" 
+                                        class="input" 
+                                        placeholder="例如：冒泡排序、熵增定律、马斯洛需求层次理论..."
+                                        maxlength="200"
+                                    >
+                                    <div class="flex justify-between items-center mt-2">
+                                        <span class="text-xs text-gray-400">
+                                            💡 提示：越具体的描述，生成效果越好
+                                        </span>
+                                        <span id="charCount" class="text-xs text-gray-400">0/200</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- 风格选择 -->
+                                <div class="mb-6">
+                                    <label class="block text-sm font-medium text-gray-700 mb-3">
+                                        生成风格
+                                    </label>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <!-- 默认风格 -->
+                                        <label class="style-option cursor-pointer">
+                                            <input type="radio" name="style" value="default" class="sr-only" checked>
+                                            <div class="style-card bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border-2 border-transparent transition-all hover-lift">
+                                                <div class="flex items-center justify-between mb-3">
+                                                    <h3 class="font-semibold text-gray-900">默认风格</h3>
+                                                    <i class="fas fa-play-circle text-blue-600 text-xl"></i>
+                                                </div>
+                                                <p class="text-sm text-gray-600 mb-3">
+                                                    经典动画风格，适合教育和演示
+                                                </p>
+                                                <div class="flex flex-wrap gap-1">
+                                                    <span class="px-2 py-1 bg-white bg-opacity-70 text-xs rounded">动画</span>
+                                                    <span class="px-2 py-1 bg-white bg-opacity-70 text-xs rounded">双语</span>
+                                                    <span class="px-2 py-1 bg-white bg-opacity-70 text-xs rounded">清晰</span>
+                                                </div>
+                                            </div>
+                                        </label>
+                                        
+                                        <!-- 奢华暗黑风格 -->
+                                        <label class="style-option cursor-pointer">
+                                            <input type="radio" name="style" value="luxury" class="sr-only">
+                                            <div class="style-card bg-gradient-to-br from-purple-900 to-blue-900 p-4 rounded-xl border-2 border-transparent transition-all hover-lift text-white">
+                                                <div class="flex items-center justify-between mb-3">
+                                                    <h3 class="font-semibold">奢华暗黑</h3>
+                                                    <i class="fas fa-gem text-purple-300 text-xl"></i>
+                                                </div>
+                                                <p class="text-sm text-purple-100 mb-3">
+                                                    科技感十足，霓虹色彩强调
+                                                </p>
+                                                <div class="flex flex-wrap gap-1">
+                                                    <span class="px-2 py-1 bg-white bg-opacity-20 text-xs rounded">霓虹</span>
+                                                    <span class="px-2 py-1 bg-white bg-opacity-20 text-xs rounded">科技</span>
+                                                    <span class="px-2 py-1 bg-white bg-opacity-20 text-xs rounded">高端</span>
+                                                </div>
+                                            </div>
+                                        </label>
+                                        
+                                        <!-- Aurora红黑风格 -->
+                                        <label class="style-option cursor-pointer">
+                                            <input type="radio" name="style" value="aurora" class="sr-only">
+                                            <div class="style-card bg-gradient-to-br from-black to-red-900 p-4 rounded-xl border-2 border-transparent transition-all hover-lift text-white">
+                                                <div class="flex items-center justify-between mb-3">
+                                                    <h3 class="font-semibold">Aurora红黑</h3>
+                                                    <i class="fas fa-bolt text-red-400 text-xl"></i>
+                                                </div>
+                                                <p class="text-sm text-red-100 mb-3">
+                                                    简约强烈，Apple风格设计
+                                                </p>
+                                                <div class="flex flex-wrap gap-1">
+                                                    <span class="px-2 py-1 bg-white bg-opacity-20 text-xs rounded">简约</span>
+                                                    <span class="px-2 py-1 bg-white bg-opacity-20 text-xs rounded">冲击</span>
+                                                    <span class="px-2 py-1 bg-white bg-opacity-20 text-xs rounded">现代</span>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- 生成按钮 -->
+                                <button id="generateBtn" class="btn btn-primary btn-lg w-full hover-lift" disabled>
+                                    <i class="fas fa-magic mr-2"></i>
+                                    <span id="generateBtnText">开始生成知识可视化</span>
+                                    <div id="generateLoader" class="loading-dots ml-3 hidden">
+                                        <div class="dot"></div>
+                                        <div class="dot"></div>
+                                        <div class="dot"></div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 结果展示区域 -->
+                        <div id="resultSection" class="hidden">
+                            <div class="card animate-slide-up">
+                                <div class="card-header">
+                                    <div class="flex items-center justify-between">
+                                        <h2 class="text-2xl font-semibold text-gray-900">
+                                            <i class="fas fa-eye text-klein mr-3"></i>
+                                            生成结果
+                                        </h2>
+                                        <div class="flex gap-2">
+                                            <button id="copyBtn" class="btn btn-secondary btn-sm">
+                                                <i class="fas fa-copy mr-1"></i>
+                                                复制
+                                            </button>
+                                            <button id="downloadBtn" class="btn btn-secondary btn-sm">
+                                                <i class="fas fa-download mr-1"></i>
+                                                下载
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <!-- 进度指示器 -->
+                                    <div id="progressContainer" class="mb-6 hidden">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-sm font-medium text-gray-700">生成进度</span>
+                                            <span id="progressText" class="text-sm text-gray-500">0%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 内容显示区域 -->
+                                    <div id="contentDisplay" class="min-h-[400px] bg-gray-50 rounded-lg p-6">
+                                        <div id="contentPlaceholder" class="flex flex-col items-center justify-center h-full text-gray-400">
+                                            <i class="fas fa-magic text-6xl mb-4"></i>
+                                            <p class="text-lg">等待生成精彩内容...</p>
+                                        </div>
+                                        <div id="contentArea" class="hidden prose prose-lg max-w-none"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </section>
+            
+        </main>
+        
+    </div>
+    
+    <!-- 配置模态框 -->
+    <div id="configModal" class="fixed inset-0 z-50 hidden">
+        <!-- 背景遮罩 -->
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm" id="configOverlay"></div>
+        
+        <!-- 模态框内容 -->
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden animate-scale-in">
+                
+                <!-- 模态框头部 -->
+                <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                    <h3 class="text-2xl font-semibold text-gray-900">
+                        <i class="fas fa-cog text-klein mr-3"></i>
+                        系统配置
+                    </h3>
+                    <button id="closeConfigBtn" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <!-- 模态框内容 -->
+                <div class="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+                    
+                    <!-- API配置区域 -->
+                    <div class="mb-8">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">
+                            <i class="fas fa-key text-klein mr-2"></i>
+                            AI模型配置
+                        </h4>
+                        
+                        <!-- 提供商选择 -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                AI提供商
+                            </label>
+                            <select id="providerSelect" class="input">
+                                <option value="gemini">Google Gemini</option>
+                                <option value="openai">OpenAI</option>
+                                <option value="custom">自定义API</option>
+                            </select>
+                        </div>
+                        
+                        <!-- API Key -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                API密钥
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    type="password" 
+                                    id="apiKeyInput" 
+                                    class="input pr-12" 
+                                    placeholder="请输入您的API密钥"
+                                >
+                                <button 
+                                    type="button" 
+                                    id="toggleApiKey" 
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                >
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Base URL (自定义API时显示) -->
+                        <div id="baseUrlGroup" class="mb-4 hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                API地址
+                            </label>
+                            <input 
+                                type="url" 
+                                id="baseUrlInput" 
+                                class="input" 
+                                placeholder="https://api.example.com/v1"
+                            >
+                        </div>
+                        
+                        <!-- 模型选择 -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                AI模型
+                            </label>
+                            <select id="modelSelect" class="input">
+                                <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                            </select>
+                        </div>
+                        
+                        <!-- 测试连接按钮 -->
+                        <button id="testConnectionBtn" class="btn btn-secondary w-full">
+                            <i class="fas fa-satellite-dish mr-2"></i>
+                            测试连接
+                        </button>
+                    </div>
+                    
+                    <!-- 界面配置区域 -->
+                    <div class="mb-8">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">
+                            <i class="fas fa-palette text-klein mr-2"></i>
+                            界面配置
+                        </h4>
+                        
+                        <!-- 主题选择 -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                界面主题
+                            </label>
+                            <select id="themeSelect" class="input">
+                                <option value="klein-blue">克莱因蓝</option>
+                                <option value="dark">深色模式</option>
+                                <option value="light">浅色模式</option>
+                            </select>
+                        </div>
+                        
+                        <!-- 语言选择 -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                界面语言
+                            </label>
+                            <select id="languageSelect" class="input">
+                                <option value="zh-CN">简体中文</option>
+                                <option value="en-US">English</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <!-- 模态框底部 -->
+                <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+                    <button id="cancelConfigBtn" class="btn btn-secondary">
+                        取消
+                    </button>
+                    <button id="saveConfigBtn" class="btn btn-primary">
+                        <i class="fas fa-save mr-2"></i>
+                        保存配置
+                    </button>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast通知容器 -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+    
+    <!-- JavaScript文件 -->
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/config.js"></script>
+    <script src="/static/js/generator.js"></script>
+    <script src="/static/js/app.js"></script>
+    
+</body>
+</html>

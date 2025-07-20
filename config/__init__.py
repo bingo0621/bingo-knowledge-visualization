@@ -1,0 +1,1 @@
+# Configuration module for BINGO Knowledge Visualization

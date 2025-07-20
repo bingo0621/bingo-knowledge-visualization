@@ -1,0 +1,387 @@
+# BINGO知识之象 - Git忽略文件
+
+# ===========================================
+# Python
+# ===========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+.pdm.toml
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# ===========================================
+# 项目特定文件
+# ===========================================
+# 配置文件
+config/user_config.json
+config/production.json
+config/local.json
+
+# 上传文件
+uploads/
+temp/
+cache/
+
+# 日志文件
+logs/
+*.log
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+
+# 生成的静态文件
+static/generated/
+static/uploads/
+
+# 临时文件
+tmp/
+temp/
+.tmp/
+
+# 备份文件
+*.bak
+*.backup
+*.old
+
+# ===========================================
+# IDE和编辑器
+# ===========================================
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ===========================================
+# 操作系统
+# ===========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.tmp
+*.temp
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ===========================================
+# Docker
+# ===========================================
+# Docker volumes
+docker-volumes/
+.docker/
+
+# ===========================================
+# 监控和日志
+# ===========================================
+# Prometheus数据
+prometheus_data/
+
+# Grafana数据
+grafana_data/
+
+# 日志文件
+*.log
+logs/
+log/
+
+# ===========================================
+# 安全敏感文件
+# ===========================================
+# API密钥
+.env.local
+.env.production
+.env.staging
+secrets.json
+credentials.json
+
+# SSL证书
+*.pem
+*.key
+*.crt
+*.csr
+ssl/
+
+# JWT密钥
+jwt_private.key
+jwt_public.key
+
+# ===========================================
+# 测试文件
+# ===========================================
+# 测试数据
+test_data/
+fixtures/
+mock_data/
+
+# 测试报告
+test-results/
+coverage-reports/
+.coverage
+htmlcov/
+
+# ===========================================
+# 构建和部署
+# ===========================================
+# 构建输出
+build/
+dist/
+*.tar.gz
+*.zip
+
+# 部署脚本
+deploy.sh
+deploy/
+
+# Kubernetes配置
+k8s/secrets/
+k8s/configmaps/
+
+# ===========================================
+# 第三方服务
+# ===========================================
+# Node.js (如果使用)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 前端构建
+frontend/dist/
+frontend/build/
+
+# ===========================================
+# 开发工具
+# ===========================================
+# 性能分析
+*.prof
+profile_output/
+
+# 调试文件
+debug/
+.debug/
+
+# 临时脚本
+scratch.py
+test.py
+debug.py
+
+# ===========================================
+# 文档
+# ===========================================
+# 生成的文档
+docs/_build/
+docs/build/
+site/
+
+# ===========================================
+# 其他
+# ===========================================
+# 压缩文件
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# 媒体文件（大文件）
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.flv
+*.webm
+*.mkv
+
+# 图片文件（如果很大）
+*.psd
+*.ai
+*.sketch
+
+# 数据文件
+*.csv
+*.json.bak
+*.xml.bak

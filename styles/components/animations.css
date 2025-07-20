@@ -1,0 +1,541 @@
+/**
+ * BINGO知识之象 - 动画效果系统
+ * 苹果风格的流畅动画和微交互
+ */
+
+/* ========================================
+   核心动画定义
+======================================== */
+
+/* 淡入动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 滑入动画 */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 缩放动画 */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 弹性动画 */
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -10px, 0);
+  }
+  70% {
+    transform: translate3d(0, -5px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+/* 脉冲动画 */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 克莱因蓝发光动画 */
+@keyframes kleinGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(0, 47, 167, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 47, 167, 0.6), 0 0 30px rgba(0, 47, 167, 0.3);
+  }
+}
+
+/* 打字机效果 */
+@keyframes typewriter {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* 光标闪烁 */
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+/* 渐变背景动画 */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* 旋转动画 */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 摇摆动画 */
+@keyframes wiggle {
+  0%, 7% {
+    transform: rotateZ(0);
+  }
+  15% {
+    transform: rotateZ(-15deg);
+  }
+  20% {
+    transform: rotateZ(10deg);
+  }
+  25% {
+    transform: rotateZ(-10deg);
+  }
+  30% {
+    transform: rotateZ(6deg);
+  }
+  35% {
+    transform: rotateZ(-4deg);
+  }
+  40%, 100% {
+    transform: rotateZ(0);
+  }
+}
+
+/* ========================================
+   动画工具类
+======================================== */
+
+/* 基础动画 */
+.animate-fade-in {
+  animation: fadeIn 0.6s var(--ease-out-quart) both;
+}
+
+.animate-slide-up {
+  animation: slideInUp 0.6s var(--ease-out-quart) both;
+}
+
+.animate-slide-down {
+  animation: slideInDown 0.6s var(--ease-out-quart) both;
+}
+
+.animate-slide-left {
+  animation: slideInLeft 0.6s var(--ease-out-quart) both;
+}
+
+.animate-slide-right {
+  animation: slideInRight 0.6s var(--ease-out-quart) both;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s var(--ease-out-quart) both;
+}
+
+.animate-bounce {
+  animation: bounce 1s both;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+.animate-klein-glow {
+  animation: kleinGlow 3s ease-in-out infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-wiggle {
+  animation: wiggle 1s ease-in-out;
+}
+
+/* 延迟动画 */
+.animate-delay-100 { animation-delay: 0.1s; }
+.animate-delay-200 { animation-delay: 0.2s; }
+.animate-delay-300 { animation-delay: 0.3s; }
+.animate-delay-500 { animation-delay: 0.5s; }
+.animate-delay-700 { animation-delay: 0.7s; }
+.animate-delay-1000 { animation-delay: 1s; }
+
+/* ========================================
+   交互动画组件
+======================================== */
+
+/* 悬停效果 */
+.hover-lift {
+  transition: all var(--transition-base);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.hover-scale {
+  transition: transform var(--transition-base);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-klein {
+  transition: all var(--transition-base);
+}
+
+.hover-klein:hover {
+  color: var(--klein-blue);
+  transform: translateY(-1px);
+}
+
+/* 按钮点击效果 */
+.btn-press {
+  transition: all var(--transition-fast);
+}
+
+.btn-press:active {
+  transform: scale(0.98);
+}
+
+/* 淡入淡出切换 */
+.fade-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all var(--transition-base);
+}
+
+.fade-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all var(--transition-base);
+}
+
+/* ========================================
+   加载动画组件
+======================================== */
+
+/* 克莱因蓝加载点 */
+.loading-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.loading-dots .dot {
+  width: 8px;
+  height: 8px;
+  background: var(--klein-blue);
+  border-radius: 50%;
+  animation: loadingDots 1.4s infinite ease-in-out both;
+}
+
+.loading-dots .dot:nth-child(1) { animation-delay: -0.32s; }
+.loading-dots .dot:nth-child(2) { animation-delay: -0.16s; }
+.loading-dots .dot:nth-child(3) { animation-delay: 0s; }
+
+@keyframes loadingDots {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 旋转加载器 */
+.loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--gray-200);
+  border-top: 2px solid var(--klein-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* 脉冲加载器 */
+.loading-pulse {
+  width: 40px;
+  height: 40px;
+  background: var(--klein-blue);
+  border-radius: 50%;
+  animation: pulsing 1.5s ease-in-out infinite;
+}
+
+@keyframes pulsing {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* ========================================
+   文字动画效果
+======================================== */
+
+/* 打字机效果 */
+.typewriter {
+  overflow: hidden;
+  border-right: 2px solid var(--klein-blue);
+  white-space: nowrap;
+  margin: 0 auto;
+  animation: 
+    typewriter 3s steps(40, end),
+    blink 0.75s step-end infinite;
+}
+
+/* 字符逐个淡入 */
+.text-reveal {
+  opacity: 0;
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.text-reveal.char-1 { animation-delay: 0.1s; }
+.text-reveal.char-2 { animation-delay: 0.2s; }
+.text-reveal.char-3 { animation-delay: 0.3s; }
+.text-reveal.char-4 { animation-delay: 0.4s; }
+.text-reveal.char-5 { animation-delay: 0.5s; }
+
+/* 高亮扫过效果 */
+.text-highlight {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--klein-blue-alpha-20) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: highlight 2s ease-in-out;
+}
+
+@keyframes highlight {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ========================================
+   进度指示器
+======================================== */
+
+/* 进度条 */
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--gray-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--klein-blue),
+    var(--klein-blue-light)
+  );
+  border-radius: var(--radius-full);
+  transition: width var(--transition-slow);
+}
+
+/* 环形进度 */
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+  fill: none;
+  stroke: var(--gray-200);
+  stroke-width: 4;
+}
+
+.progress-ring-fill {
+  fill: none;
+  stroke: var(--klein-blue);
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dasharray var(--transition-slow);
+}
+
+/* ========================================
+   页面切换动画
+======================================== */
+
+/* 页面淡入淡出 */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.4s var(--ease-out-quart);
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s var(--ease-out-quart);
+}
+
+/* 滑动切换 */
+.slide-transition-enter {
+  transform: translateX(100%);
+}
+
+.slide-transition-enter-active {
+  transform: translateX(0);
+  transition: transform 0.3s var(--ease-out-quart);
+}
+
+.slide-transition-exit {
+  transform: translateX(0);
+}
+
+.slide-transition-exit-active {
+  transform: translateX(-100%);
+  transition: transform 0.3s var(--ease-out-quart);
+}
+
+/* ========================================
+   响应式动画优化
+======================================== */
+
+/* 减少动画开销 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-slide-down,
+  .animate-slide-left,
+  .animate-slide-right,
+  .animate-scale-in {
+    animation-duration: 0.4s;
+  }
+  
+  .hover-lift:hover,
+  .hover-scale:hover {
+    transform: none;
+  }
+}

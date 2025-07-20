@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+pydantic
+openai
+jinja2
+pytz
+google-generativeai

@@ -1,0 +1,159 @@
+version: '3.8'
+
+services:
+  # 主应用服务
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://bingo_user:bingo_pass@db:5432/bingo_db
+      - REDIS_URL=redis://redis:6379/0
+      - DEBUG=true
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - bingo-network
+
+  # PostgreSQL 数据库
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=bingo_db
+      - POSTGRES_USER=bingo_user
+      - POSTGRES_PASSWORD=bingo_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - bingo-network
+
+  # Redis 缓存和队列
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - bingo-network
+
+  # Celery 任务队列
+  celery:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A src.tasks worker --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://bingo_user:bingo_pass@db:5432/bingo_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/3
+      - CELERY_RESULT_BACKEND=redis://redis:6379/4
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - bingo-network
+
+  # Celery Beat 定时任务
+  celery-beat:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A src.tasks beat --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://bingo_user:bingo_pass@db:5432/bingo_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/3
+      - CELERY_RESULT_BACKEND=redis://redis:6379/4
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - bingo-network
+
+  # Nginx 反向代理
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./static:/var/www/static
+      - ./uploads:/var/www/uploads
+    depends_on:
+      - web
+    restart: unless-stopped
+    networks:
+      - bingo-network
+
+  # Prometheus 监控
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - bingo-network
+
+  # Grafana 可视化
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - bingo-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  bingo-network:
+    driver: bridge
